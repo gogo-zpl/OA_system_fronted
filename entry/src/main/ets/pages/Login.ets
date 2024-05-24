@@ -39,13 +39,13 @@ struct Login {
         .width(300)
 
         Row() {
-          Text('提交入职申请')
+          Text('注册')
             .onClick(()=>{
               //跳转到入职申请界面
             })
         }
         .height(30)
-        .padding({left:150})
+        .padding({left:220})
         Row() {
           Button('登录')
             .width(120)
