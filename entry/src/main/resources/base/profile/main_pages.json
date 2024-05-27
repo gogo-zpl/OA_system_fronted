@@ -1,6 +1,13 @@
 {
   "src": [
-    "pages/Index"
-
+    "pages/Index",
+    "pages/Login",
+    "pages/Announcement",
+    "pages/UpAnnouncement",
+    "pages/SignIn",
+    "pages/Attendance",
+    "pages/AttendanceRecordCorrection",
+    "pages/Todo",
+    "pages/Register"
   ]
 }

@@ -1,3 +1,4 @@
+import router from '@ohos.router'
 class Announce {
   name: string
   time: string
@@ -7,9 +8,16 @@ class Announce {
     this.time = time
   }
 }
+
+
 @Entry
 @Component
 struct Index {
+  @State currentIndex: number = 0;
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: PasswordDialog({}),
+  })
+
   private announces: Array<Announce> =[
     //接受数据
     new Announce('公司今天加班','2024/5/23'),
@@ -24,6 +32,23 @@ struct Index {
     new Announce('公司今天加班','2024/5/23')
   ]
   private controller: TabsController = new TabsController()
+  @Builder //修饰导航栏
+  TabBuilder(title: string, targetIndex: number, selectedImg: Resource,
+             normalImg: Resource) {
+    Column() {
+      Image(this.currentIndex === targetIndex ? normalImg : selectedImg)
+        .size({ width: 30, height: 30 })
+      Text(title)
+        .fontColor(this.currentIndex === targetIndex ? '#1698CE' : '#6B6B6B')
+    }
+    .width('100%')
+    .height(60)
+    .justifyContent(FlexAlign.Center)
+    .onClick(() => {
+      this.currentIndex = targetIndex;
+      this.controller.changeIndex(this.currentIndex);
+    })
+  }
   build() {
 
       Tabs({barPosition:BarPosition.End,controller:this.controller}){
@@ -49,6 +74,17 @@ struct Index {
                   .height('100%')
                   .onClick(()=>{
                     //跳转到待办事项页面
+                    router.pushUrl({
+                      url:'pages/Todo',
+                      params:{id:1}
+                    },
+                      router.RouterMode.Single,
+                      err=>{
+                        if(err){
+                          console.log('路由失败')
+                        }
+                      }
+                    )
                   })
               }
               .padding({top:20})
@@ -75,6 +111,17 @@ struct Index {
                       .borderRadius(10)
                       .onClick(()=>{
                         //跳转公告详情页
+                        router.pushUrl({
+                          url:'pages/Announcement',
+                          params:{id:1}
+                        },
+                          router.RouterMode.Single,
+                          err=>{
+                            if(err){
+                              console.log('路由失败')
+                            }
+                          }
+                        )
                       })
                     }
                   })
@@ -84,17 +131,19 @@ struct Index {
           }.width('100%').height('100%').backgroundColor('#eee')
         }
 
-      }.tabBar('首页')
+      }
+        .tabBar(this.TabBuilder('首页',0,$r('app.media.shouye'),$r('app.media.shouyeselect')))
 
         //page2-工作台界面
         TabContent() {
           Column(){
             //headline
             Row(){
-              Text('            OA 办公系统')
+              Text('OA 办公系统')
                 .fontSize(30)
                 .fontWeight(FontWeight.Bold)
                 .fontColor('#00BFFF')
+                .margin({left:100})
             }
             .backgroundColor(Color.White)
             .width('100%')
@@ -103,6 +152,17 @@ struct Index {
                 Button('考勤打卡')
                   .onClick(()=>{
                     //跳转到考勤打卡页面
+                    router.pushUrl({
+                      url:'pages/Attendance',
+                      params:{id:1}
+                    },
+                      router.RouterMode.Single,
+                      err=>{
+                        if(err){
+                          console.log('路由失败')
+                        }
+                      }
+                    )
                   })
                   .fontSize(20)
                   .width('45%')
@@ -112,6 +172,17 @@ struct Index {
                 Button('签到')
                   .onClick(()=>{
                     //跳转到签到界面
+                    router.pushUrl({
+                      url:'pages/SignIn',
+                      params:{id:1}
+                    },
+                      router.RouterMode.Single,
+                      err=>{
+                        if(err){
+                          console.log('路由失败')
+                        }
+                      }
+                    )
                   })
                   .fontSize(20)
                   .width('45%')
@@ -172,6 +243,17 @@ struct Index {
                       .margin({left:25,top:10})
                       .onClick(()=>{
                         //跳转到补卡界面
+                        router.pushUrl({
+                          url:'pages/AttendanceRecordCorrection',
+                          params:{id:1}
+                        },
+                          router.RouterMode.Single,
+                          err=>{
+                            if(err){
+                              console.log('路由失败')
+                            }
+                          }
+                        )
                       })
                     Text('补卡')
                       .width(40)
@@ -285,6 +367,17 @@ struct Index {
                       .margin({left:25,top:10})
                       .onClick(()=>{
                         //跳转到待办事项界面
+                        router.pushUrl({
+                          url:'pages/Todo',
+                          params:{id:1}
+                        },
+                          router.RouterMode.Single,
+                          err=>{
+                            if(err){
+                              console.log('路由失败')
+                            }
+                          }
+                        )
                       })
                     Text('待办事项')
                       .width(80)
@@ -309,6 +402,17 @@ struct Index {
                       .margin({left:25,top:10})
                       .onClick(()=>{
                         //跳转到公告发布界面
+                        router.pushUrl({
+                          url:'pages/UpAnnouncement',
+                          params:{id:1}
+                        },
+                          router.RouterMode.Single,
+                          err=>{
+                            if(err){
+                              console.log('路由失败')
+                            }
+                          }
+                        )
                       })
                     Text('公告发布')
                       .width(80)
@@ -319,15 +423,129 @@ struct Index {
             }
           }.width('100%').height('100%').backgroundColor('#eee')
         }
-        .tabBar('工作台')
+        .tabBar(this.TabBuilder('工作台',1,$r('app.media.Workbench'),$r('app.media.Workbenchselect')))
 
-        //page3-我的界面(未完成）
+        //page3-我的界面
         TabContent() {
           Column(){
+            Row(){
+              Image($r('app.media.geren'))
+                .width(40)
+                .margin({left:80})
+              Text('个人信息')
+                .fontSize(30)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(Color.Black)
+                .margin({left:10})
+            }
+            .backgroundColor(Color.White)
+            .width('100%')
+            //读取后端数据 this.name？？
+            Row(){
+              Text('姓名')
+                .fontSize(25)
+                .margin({left:20})
+              Text('巫山云')
+                .fontSize(18)
+                .margin({left:200})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            Row(){
+              Text('性别')
+                .fontSize(25)
+                .margin({left:20})
+              Text('男')
+                .fontSize(18)
+                .margin({left:200})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            Row(){
+              Text('生日')
+                .fontSize(25)
+                .margin({left:20})
+              Text('2024/5/24')
+                .fontSize(18)
+                .margin({left:200})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            Row(){
+              Text('职位')
+                .fontSize(25)
+                .margin({left:20})
+              Text('经理')
+                .fontSize(18)
+                .margin({left:200})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            Row(){
+              Text('电话')
+                .fontSize(25)
+                .margin({left:20})
+              Text('18853820296')
+                .fontSize(18)
+                .margin({left:150})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            .justifyContent(FlexAlign.SpaceBetween)
+            Row(){
+              Text('部门')
+                .fontSize(25)
+                .margin({left:20})
+              Text('运营部')
+                .fontSize(18)
+                .margin({left:200})
+            }.width('100%')
+            .height(50)
+            .backgroundColor('#fff')
+            .margin({top:20})
+            .borderRadius(20)
+            Row(){
+              Image($r('app.media.xiugai'))
+                .width(20)
+              Text('修改密码')
+                .fontColor(Color.Blue)
+            }.width('100%')
+            .margin({top:20})
+            .justifyContent(FlexAlign.End)
+            .borderColor(Color.Blue)
+            .onClick(()=>{
+              this.dialogController.open()
+            })
 
-          }.width('100%').height('100%').backgroundColor(Color.Pink)
+            Button() {
+              Row() {
+                Image($r('app.media.tuichu'))
+                  .width(20)
+                Text('  退出登录')
+                  .fontColor(Color.White)
+                  .fontWeight(FontWeight.Bold)
+                  .onClick(()=>{
+                    //退出到登陆界面
+                   router.back()
+                  })
+              }
+            }.height(50)
+            .width(150)
+            .margin({top:80})
+            .backgroundColor('#ea6363')
+          }.width('100%').height('100%').backgroundColor('#eee')
         }
-        .tabBar('我的')
+        .tabBar(this.TabBuilder('我的',2,$r('app.media.wode'),$r('app.media.wodeselect')))
         
     }
       .barWidth('100%') // 设置TabBar宽度
@@ -335,5 +553,30 @@ struct Index {
       .width('100%') // 设置Tabs组件宽度
       .height('100%') // 设置Tabs组件高度
       .backgroundColor(0xF5F5F5)
+  }
+}
+@CustomDialog     //修改密码弹窗
+struct PasswordDialog {
+  controller: CustomDialogController
+  @State newPassword: string = ''  // 获取新密码
+  build() {
+    Column() {
+      Row() {
+        Text('输入新密码: ').margin({top:20})
+          .fontSize(20)
+        TextInput()
+          .width('60%')
+          .margin({top:20})
+          .onChange(value=>{
+            this.newPassword = value
+            console.log(this.newPassword)
+          })
+      }
+      Button('确认').margin({top:30})
+        .fontSize(20)
+        .onClick((value)=>{
+          this.controller.close()
+        })
+    }.height(150).width('90%')
   }
 }

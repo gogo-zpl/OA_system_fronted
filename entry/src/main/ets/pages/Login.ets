@@ -1,7 +1,9 @@
+import router from '@ohos.router';
 @Entry
 @Component
 struct Login {
-
+  @State account:string = ''  //获取账号
+  @State password:string = ''  //获取密码
   build() {
       Column() {
         Row() {
@@ -18,6 +20,10 @@ struct Login {
             .width(40)
             .height(40)
           TextInput({ placeholder: '请输入账号或手机号' })
+            .onChange(value=>{
+            this.account = value
+              //console.log(this.account)
+            })
             //读取输入结果的操作
             .width(250)
             .height(40)
@@ -34,6 +40,10 @@ struct Login {
             .height(40)
             .backgroundColor('#FFF')
             .type(InputType.Password)
+            .onChange(value=>{
+              this.password = value
+              //console.log(this.password)
+            })
         }
         .height(60)
         .width(300)
@@ -41,7 +51,18 @@ struct Login {
         Row() {
           Text('注册')
             .onClick(()=>{
-              //跳转到入职申请界面
+              //跳转到注册界面
+              router.pushUrl({
+                url:'pages/Register',
+                params:{id:1}
+              },
+                router.RouterMode.Single,
+                err=>{
+                  if(err){
+                    console.log('路由失败')
+                  }
+                }
+              )
             })
         }
         .height(30)
@@ -51,6 +72,17 @@ struct Login {
             .width(120)
             .onClick(() => {
               //登录操作成功则跳转到首页
+              router.pushUrl({
+                url:'pages/Index',
+                params:{id:1}
+              },
+                router.RouterMode.Single,
+                err=>{
+                  if(err){
+                    console.log('路由失败')
+                  }
+                }
+              )
             })
         }
         .height(80)
