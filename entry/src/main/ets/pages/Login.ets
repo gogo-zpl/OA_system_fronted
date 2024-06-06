@@ -1,9 +1,75 @@
 import router from '@ohos.router';
+import LoginResponse, { EmployeeData,loginInfo }  from '../viewmodel/LoginInfo'
+import LoginModel from '../model/LoginModel'
+import PreferencesUtil from '../util/preferencesUtil'
+@CustomDialog     //登录错误弹窗
+struct PasswordDialog {
+  controller: CustomDialogController
+  build() {
+    Column() {
+      Row() {
+        Text('账号或密码错误').margin({ top: 20 })
+          .fontSize(20)
+      }
+      Button('确认').margin({ top: 20 })
+        .fontSize(20)
+        .onClick((value) => {
+          this.controller.close()
+        })
+    }
+  }
+}
+
 @Entry
 @Component
 struct Login {
-  @State account:string = ''  //获取账号
-  @State password:string = ''  //获取密码
+  private loginInfo:loginInfo ={account:'',password:'',permission:0}
+  //登录失败弹窗
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: PasswordDialog({}),
+  })
+  @State loggedInUser: EmployeeData | null = null //保存用户数据
+
+  login() {   //登录判断
+      LoginModel.LoginRequest(this.loginInfo)
+      .then((message:LoginResponse) => {
+        if (message.code === 1) {
+        this.loggedInUser= message.data; // 获取返回数据中的 EmployeeData 对象
+          //数据持久化（用户id）写入
+          PreferencesUtil.putPreferenceValue('User','employee_id',this.loggedInUser.employee_id)
+          const birthdateString = this.loggedInUser.birthdate.toString();
+          router.pushUrl({
+          url: 'pages/Index',
+          params: {
+            employee_id:this.loggedInUser.employee_id,
+            name:this.loggedInUser.name,
+            department_id: this.loggedInUser.department_id,
+            position:this.loggedInUser.position,
+            phone_number:this.loggedInUser.phone_number,
+            id_card: this.loggedInUser.id_card,
+            birthdate:birthdateString,
+            is_regular_employee:this.loggedInUser.is_regular_employee,
+            hire_date:this.loggedInUser.hire_date,
+            password: this.loggedInUser.password,
+            account: this.loggedInUser.account,
+            permission: this.loggedInUser.permission,
+            department_name: this.loggedInUser.department_name }
+        }, router.RouterMode.Single, err => {
+          if (err) {
+            console.log('路由失败');
+          }
+        })
+          console.log('Name:', this.loggedInUser.birthdate.toString())
+      }else{
+          console.log('登录失败');
+          this.dialogController.open()
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   build() {
       Column() {
         Row() {
@@ -21,8 +87,7 @@ struct Login {
             .height(40)
           TextInput({ placeholder: '请输入账号或手机号' })
             .onChange(value=>{
-            this.account = value
-              //console.log(this.account)
+              this.loginInfo.account=value
             })
             //读取输入结果的操作
             .width(250)
@@ -41,8 +106,7 @@ struct Login {
             .backgroundColor('#FFF')
             .type(InputType.Password)
             .onChange(value=>{
-              this.password = value
-              //console.log(this.password)
+              this.loginInfo.password=value
             })
         }
         .height(60)
@@ -72,17 +136,7 @@ struct Login {
             .width(120)
             .onClick(() => {
               //登录操作成功则跳转到首页
-              router.pushUrl({
-                url:'pages/Index',
-                params:{id:1}
-              },
-                router.RouterMode.Single,
-                err=>{
-                  if(err){
-                    console.log('路由失败')
-                  }
-                }
-              )
+             this.login()
             })
         }
         .height(80)

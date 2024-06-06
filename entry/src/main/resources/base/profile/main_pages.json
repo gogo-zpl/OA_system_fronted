@@ -8,6 +8,18 @@
     "pages/Attendance",
     "pages/AttendanceRecordCorrection",
     "pages/Todo",
-    "pages/Register"
+    "pages/Register",
+    "pages/ApprovalCenter1",
+    "pages/ChangePositionAppli1",
+    "pages/DimissionAppli1",
+    "pages/LeavingApplication1",
+    "pages/MeetingAppli1",
+    "pages/meetingAppli2",
+    "pages/outAppli1",
+    "pages/OvertimeApplication1",
+    "pages/RegularAppli1",
+    "pages/ReimbursementAppli1",
+    "pages/TravelApplication1",
+    "pages/ApplicationShow"
   ]
 }
